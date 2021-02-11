@@ -1,0 +1,35 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+
+PATH=~/bin:$PATH
+PATH=~/.local/bin:$PATH
+if [ `uname` == "Darwin" ]
+then
+  PATH=/usr/local/cuda/bin:$PATH
+  PATH=/Users/gavinprivate/Git/brew/bin:$PATH
+  export GHC_DOT_APP="/Applications/ghc-7.8.4.app"
+  if [ -d "$GHC_DOT_APP" ]; then
+    PATH="${HOME}/.cabal/bin:${GHC_DOT_APP}/Contents/bin:${PATH}"
+  fi
+
+  # export OPAMKEEPBUILDDIR=true
+  # export OCAMLPARAM="_,bin-annot=1"
+
+  PATH="$PATH:/Users/gavinprivate/miniconda3/bin"
+  PATH="$HOME/.cargo/bin:$PATH"
+fi
+
+export PATH
+
+export ATCF_CDL_TOOLS_PATH=~/Git/cdl_tools_grip
+
+export PYTHONPATH
+
+export HISTIGNORE="&:ls:[bf]g:history:ll:exit"
+
+# OPAM configuration
+. ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true

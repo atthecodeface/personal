@@ -1,0 +1,48 @@
+alias                 ll="ls -slagtr "
+alias              clean="rm -f *~"
+
+function cless () { script -q /dev/null --command "$*" < /dev/null 2>&1 | less -R ;}
+if [ `uname` == "Darwin" ]
+then
+  function cless () { script -q /dev/null $* < /dev/null 2>&1 | less -R ;}
+  alias            gtkwave="/tools/gtkwave/gtkwave.app/Contents/MacOS/gtkwave-bin "
+fi
+
+alias profile="CPUPROFILE_FREQUENCY=10000 CPUPROFILE=./exec.prof DYLD_INSERT_LIBRARIES='/usr/local/lib/libtcmalloc_and_profiler.dylib' "
+
+alias           dvdclone="vobcopy -f -F 64 -v -v -m "
+
+alias   rsync_timemachine='rsync -a -e ssh /Volumes/Time\ Machine\ Backups/Backups.backupdb/GJS_MBP/Latest/Main gstark@ocarina:/backup/gavin/MacBookProMain'
+
+shopt -s cdspell
+
+PS1='\t:\w:\!$ '
+
+PS1="\[\033]0;\u@\h: \w\007\]bash\\$ "
+
+# Bash prompts: \e[0;34m  is choose bright 31 (red) 32 (green) 34 (blue) etc for foreground
+# Bash prompts: \e[m      is use default color
+# Bash prompts: \!        is history number of this command
+# Bash prompts: \#        is command number of this command
+# Bash prompts: \t        is current time in 24-hour h:m:s
+# Bash prompts: \w        is current working directory
+# Bash prompts: \W        is basename of current working directory
+# Bash prompts: \h        is hostname up to '.'
+# Bash prompts: \H        is full hostname
+# Bash prompts: \a        is a bell
+PS1_head="\e[0;36m\t:\!:\e[0;33m\h\e[0;36m"
+PS1_title="\e]0;\W\a"
+PS1_middle=""
+PS1_tail="\e[0;36m:\w$\e[m\n$ "
+if [ "z$GRIP_SHELL" != "z" ]
+then
+  PS1_title="\e]0;grip : $GRIP_ROOT_DIR : \W\a"
+  PS1_middle=":\e[0;32mgrip:$GRIP_ROOT_DIR"
+fi
+PS1="$PS1_title$PS1_head$PS1_middle$PS1_tail"
+
+export HISTCONTROL=ignoreboth
+HISTTIMEFORMAT='%T '
+
+export CAML_LD_LIBRARY_PATH=/Users/gavinprivate/.opam/system/lib/stubslibs/:/Users/gavinprivate/.opam/system/lib/stublibs:/Users/gavinprivate/Git/brew/lib/ocaml/stublibs:/Users/gavinprivate/Git/brew/lib
+export DYLD_LIBRARY_PATH=/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/:/Users/gavinprivate/Git/brew/lib

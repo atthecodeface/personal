@@ -9,7 +9,11 @@
 (package-initialize)
 ;; (package-refresh-contents)
 
-(add-to-list 'load-path "~/environment/emacs-lisp/")
+(add-to-list 'load-path "~/emacs-lisp/")
+(defun load-if-exists (filename)
+  (when (file-exists-p filename)
+    (load filename))
+  )
 
 (defmacro setq-local (var val)
   "Set variable VAR to value VAL in current buffer."
@@ -108,10 +112,17 @@
 
 ;(load "csv-mode")
 (load "cc-mode")
-(load "/Users/gavinprivate/.opam/system/share/emacs/site-lisp/tuareg-site-file")
+(let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
+  (when (and opam-share (file-directory-p opam-share))
+    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+    (autoload 'merlin-mode "merlin" nil t nil)
+    (add-hook 'tuareg-mode-hook 'merlin-mode t)
+    (add-hook 'caml-mode-hook 'merlin-mode t)))
+(load-if-exists "~/.opam/system/share/emacs/site-lisp/tuareg-site-file")
 (add-to-list 'load-path "~/.opam/system/share/emacs/site-lisp/")
 (autoload 'merlin-mode "merlin" nil t nil)
-(setq merlin-command "~/.opam/system/bin/ocamlmerlin")
+(setq merlin-command 'opam) ; "~/.opam/system/bin/ocamlmerlin")
+; (setq merlin-command "~/.opam/system/bin/ocamlmerlin")
 (setq merlin-logfile "~/merlin_logfile")
 
 (load "markdown-mode")
@@ -338,7 +349,7 @@
  css-mode-hook             'css-mode-hook-fn
  csv-mode-hook                   'csv-mode-hook-fn
  c-mode-hook                     'c-mode-hook-fn
- javascript-mode-hook                  'rust-mode-hook-fn
+ javascript-mode-hook             'rust-mode-hook-fn
  js-mode-hook                  'rust-mode-hook-fn
  rust-mode-hook                  'rust-mode-hook-fn
  objc-mode-hook                  'objc-mode-hook-fn
@@ -388,9 +399,6 @@
    "article\\|\\(sub\\)*section\\|chapter\\|div\\|appendix\\|part\\|preface\\|reference\\|simplesect\\|bibliography\\|bibliodiv\\|glossary\\|glossdiv\\|procedure\\|varlistentry\\|step\\|listitem\\|table")
  '(package-selected-packages (quote (rust-mode)))
  '(printer-name "uiport1")
- '(rng-schema-locating-files
-   (quote
-    ("schemas.xml" "~/environment/emacs-lisp/schemas.xml" "/Applications/Emacs.app/Contents/Resources/etc/schema/schemas.xml")))
  '(tab-stop-list
    (quote
     (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)))
@@ -884,4 +892,4 @@ FACE is the face to use.  If nil, then face `column-marker-1' is used."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "Ubuntu Mono" :foundry "DAMA" :slant normal :weight normal :height 98 :width normal)))))
