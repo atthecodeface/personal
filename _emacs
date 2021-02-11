@@ -1,0 +1,887 @@
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+;; (package-refresh-contents)
+
+(add-to-list 'load-path "~/environment/emacs-lisp/")
+
+(defmacro setq-local (var val)
+  "Set variable VAR to value VAL in current buffer."
+  ;; Can't use backquote here, it's too early in the bootstrap.
+  (list 'set (list 'make-local-variable (list 'quote var)) val))
+
+(defun intelligent-tab (&optional prefix-arg)
+  "Intelligent tab"
+  (interactive "*P")
+  (cond ( (= (char-syntax (preceding-char)) 119)
+		  (dabbrev-expand nil)
+		  )
+		( (= (char-syntax (preceding-char)) 32)
+		  (tab-to-tab-stop)
+		  )
+		( t
+		  (progn
+			(indent-according-to-mode)
+			(cond ( (= (char-syntax (preceding-char)) 62)
+					(tab-to-tab-stop)
+					)
+				  )
+			)
+		  )
+		)
+  )
+
+(defun convert-xml-to-words (&optional fred)
+  "Convert XML to word list"
+  (interactive "*P")
+  (progn
+    (goto-line 1)
+    (replace-regexp "<[^>]*>" "\n")
+    (goto-line 1)
+    (replace-string "&apos;" "'")
+    (goto-line 1)
+    (replace-string "\u2018" "'")
+    (goto-line 1)
+    (replace-string "\u2019" "'")
+    (goto-line 1)
+    (replace-string "\u201c" "\"")
+    (goto-line 1)
+    (replace-string "\u201d" "\"")
+    (goto-line 1)
+    (replace-string "\u2026" " ... ")
+    (goto-line 1)
+    (replace-string "\u00ee" "i")
+    (goto-line 1)
+    (replace-string "\u00ef" "i")
+    (goto-line 1)
+    (replace-string "\u00e9" "e")
+    (goto-line 1)
+    (replace-string "\u00e8" "e")
+    (goto-line 1)
+    (replace-string "\u00ea" "e")
+    (goto-line 1)
+    (replace-string "\u00e7" "c")
+    (goto-line 1)
+    (replace-string "\u00e0" "a")
+    (goto-line 1)
+    (replace-string "\u00e1" "a")
+    (goto-line 1)
+    (replace-string "\"" "\n")
+    (goto-line 1)
+    (replace-string "," "\n")
+    (goto-line 1)
+    (replace-string ";" "\n")
+    (goto-line 1)
+    (replace-string ":" "\n")
+    (goto-line 1)
+    (replace-string "." "\n")
+    (goto-line 1)
+    (replace-string "?" "\n")
+    (goto-line 1)
+    (replace-string "!" "\n")
+    (goto-line 1)
+    (replace-string "\u2013" "-")
+    (goto-line 1)
+    (replace-string "\u2014" "-")
+    (goto-line 1)
+    (replace-string " " "\n")
+    (goto-line 1)
+    (replace-string "\n\n" "\n")
+    (goto-line 1)
+    (replace-string "\n\n" "\n")
+    (goto-line 1)
+    (replace-string "\n\n" "\n")
+    (goto-line 1)
+    (replace-string "\n\n" "\n")
+    (goto-line 1)
+    (replace-string "\n\n" "\n")
+    (goto-line 1)
+    (insert "Use 'sort -df part_one_words.txt | uniq -ci | less' to sort and provide counts\n")
+    )
+)
+
+;(load "csv-mode")
+(load "cc-mode")
+(load "/Users/gavinprivate/.opam/system/share/emacs/site-lisp/tuareg-site-file")
+(add-to-list 'load-path "~/.opam/system/share/emacs/site-lisp/")
+(autoload 'merlin-mode "merlin" nil t nil)
+(setq merlin-command "~/.opam/system/bin/ocamlmerlin")
+(setq merlin-logfile "~/merlin_logfile")
+
+(load "markdown-mode")
+;(defun enter-outlining (regexp)
+;  (local-set-key "\C-c\C-a" 'outline-show-children)
+;  (local-set-key "\C-c\C-s" 'outline-show-subtree)
+;  (local-set-key "\C-c\C-d" 'outline-show-entry)
+;  (local-set-key "\C-c\C-h" 'outline-hide-subtree)
+;  (local-set-key "\C-c\C-n" 'outline-next-visible-heading)
+;  (local-set-key "\C-c\C-p" 'outline-previous-visible-heading)
+;  (local-set-key "\C-c\C-u" 'outline-up-heading)
+;  (setq outline-regexp regexp)
+;  (setq outline-heading-end-regexp "\n")
+;  (setq outline-level 'outline-level)
+;  (outline-minor-mode 1)
+;  (show-all)
+;  (hide-body)
+;  )
+(defun enter-outlining (regexp)
+  (local-set-key "\C-c\C-a" 'show-children)
+  (local-set-key "\C-c\C-s" 'show-subtree)
+  (local-set-key "\C-c\C-d" 'show-entry)
+  (local-set-key "\C-c\C-h" 'hide-subtree)
+  (local-set-key "\C-c\C-n" 'outline-next-visible-heading)
+  (local-set-key "\C-c\C-p" 'outline-previous-visible-heading)
+  (local-set-key "\C-c\C-u" 'outline-up-heading)
+  (setq outline-regexp regexp)
+  (setq outline-heading-end-regexp "\n")
+  (setq outline-level 'outline-level)
+  (outline-minor-mode 1)
+  (show-all)
+  (hide-body)
+  )
+
+(defun markdown-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "#+")
+  (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
+  )
+(defun uc-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "/\\\*a\\|[	 ]*/\\\*[\\\*b-z][ 	]")
+  (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
+  )
+(defun csv-mode-hook-fn   ()
+  (auto-fill-mode)
+  )
+(defun c-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (local-set-key "\C-C\C-c" 'compile)
+  (enter-outlining "/\\\*\\\*")
+  (enter-outlining "/\\\*a\\|[	 ]*/\\\*[\\\*b-z][ 	]")
+  ;      / * (a)
+  ; |    [spc tab]* / * [ar]
+  ; |    [spc tab]* / * [*b-qs-z][spc tab]+
+  ; original first: /\*(a)
+  ; original second: [	 ]*/\*[ar]
+  ; original third: [	 ]*/\*[\*b-qs-z][ 	]+
+  ; Combined : /\*(a)\|[	 ]*/\*[ar]\|[	 ]*/\*[\*b-qs-z][ 	]+
+  ; Quote \ as \\\ : /\\\*(a)\\\|[	 ]*/\\\*[ar]\\\|[	 ]*/\\\*[\*b-qs-z][ 	]+
+  ; it is the last of these that has longevity
+  (enter-outlining "/\\\*(a)\\|[	 ]*/\\\*[ar]\\|[	 ]*/\\\*[\\\*b-qs-z][ 	]+")
+  (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
+  )
+(defun rust-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  ;      / * (a)
+  ; |    [spc tab]* / * [ar]
+  ; |    [spc tab]* / * [*b-qs-z][spc tab]+
+  ; it is the last of these that has longevity
+  ; original: ws* . (// or /*) . [a-z]+
+  ; original: "\s-*\(/\*\|//\)[a-z]+"
+  ; quote \ as \\: "\\s-*\\(/\\*\\|//\\)[a-z]+")
+  (enter-outlining "\\s-*\\(/\\*\\|//\\)[a-z]+")
+  (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
+  )
+(defun objc-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (local-set-key "\C-C\C-c" 'compile)
+  (enter-outlining "/\\\*\\\*")
+  (enter-outlining "/\\\*a\\|[	 ]*/\\\*[\\\*b-z][ 	]")
+  (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
+  )
+(defun css-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "/\\\*a\\|[	 ]*/\\\*[b-z][ 	]")
+  )
+(defun asm-mode-hook-fn   ()
+  (enter-outlining ";;; a\\|[	 ]*;; *[b-z][ 	]")
+  (local-set-key "\011" 'intelligent-tab)
+  )
+(defun shell-style-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "#[a!]\\|[	 ]*#[cgftvb][ 	]")
+  )
+(defun python-style-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "\\(#[a!]\\|[	 ]*#[cgftvb][ 	]\\)")
+  )
+(defun tuareg-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (merlin-mode)
+  (enter-outlining "(\\\*\\(a\\)\\|[	 ]*(\\\*[ar]\\|[	 ]*(\\\*[\\\*b-qs-z][ 	]+")
+  ;(setq case-fold-search nil)
+  (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
+  (local-set-key "\M-q" 'fill-paragraph)
+  (local-set-key "\C-c\C-p" 'outline-previous-visible-heading)
+  )
+(defun merlin-mode-hook-fn   ()
+  (local-set-key "\C-c\C-p" 'outline-previous-visible-heading)
+  )
+(defun nxml-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (local-set-key "\C-c\C-u" 'nxml-backward-up-element)
+  (local-set-key "\C-c\C-p" 'nxml-backward-element)
+  (local-set-key "\C-c\C-n" 'nxml-forward-element)
+  (local-set-key "\C-c\C-d" 'nxml-show-direct-text-content)
+  (local-set-key "\C-c\C-s" 'nxml-show)
+  (local-set-key "\C-c\C-q" 'nxml-show-all)
+  (local-set-key "\C-c\C-r" 'nxml-refresh-outline)
+  (local-set-key "\C-c\C-h" 'nxml-hide-subheadings)
+  (local-set-key "\C-c\C-a" 'nxml-show-direct-subheadings)
+  )
+(defun php-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (local-set-key "\M-q" 'fill-paragraph)
+  (enter-outlining "/\\\*a\\|[	 ]*/\\\*[b-z][ 	]")
+  (modify-syntax-entry ?_ "_" php-mode-syntax-table) ; .->1, @->2, w->2, W->2 |->15
+  (setq font-lock-defaults
+ 	'((php-font-lock-keywords-1
+ 	   php-font-lock-keywords-2
+ 	   php-font-lock-keywords-3
+ 	   )
+ 	  nil				; KEYWORDS-ONLY
+ 	  T				; CASE-FOLD
+ 	  ((?\_ . "w"))				; SYNTAX-ALIST
+ 	  nil				; SYNTAX-BEGIN
+ 	  (font-lock-syntactic-keywords . php-font-lock-syntactic-keywords)))
+  )
+
+(add-to-list 'exec-path "/usr/local/bin")
+
+(setq ispell-program-name "aspell"
+      ispell-dictionary "english"
+      ispell-dictionary-alist
+      (let ((default '("[A-Za-z]" "[^A-Za-z]" "[']" nil
+                       ("-B" "-d" "english" "--dict-dir"
+                        "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
+                       nil iso-8859-1)))
+        `((nil ,@default)
+          ("english" ,@default))))
+(set-default 'ispell-skip-html t)
+(setq ispell-extra-args '("--mode=sgml"))
+
+(defun tex-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (local-set-key "\M-f" 'fill-region-as-paragraph)
+  (outline-minor-mode 1)
+  (auto-fill-mode 1)
+  (hide-body)
+  )
+(defun emacs-lisp-mode-hook-fn   ()
+  (local-set-key "\C-c\C-r" 'eval-region)
+  )
+
+(defun gjs-verilog-mode ()
+  "This mode is used for editing Verilog files"
+  (setq major-mode 'verilog-mode)
+  (setq mode-name "Verilog")
+  (setq mode-line-process '(""))
+  (make-local-variable 'telnet-interrupt-string)
+  (setq telnet-interrupt-string "^C")
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "//a\\|[	 ]*//[b-z][ 	]")
+)
+
+(setq default-tab-width 4)
+(setq calendar-latitude 53.0)
+(setq calendar-longitude 0.0)
+(display-time)
+(setq search-highlight t)
+
+;; initial frame width and height overriding X resource values
+(setq initial-frame-alist '((width . 120) (height . 43)))
+
+(setq scroll-step 1)
+
+(setq auto-mode-alist 
+      (append '(("\\.perl$" . perl-mode)
+				("\\.pl$" . perl-mode) 
+				("\\.mif$" . perl-mode) 
+				("\\.hwex$" . perl-mode) 
+				("\\.xpbm$" . perl-mode) 
+				("\\.cppm$" . perl-mode) 
+				("\\.cppt$" . perl-mode) 
+				("\\.csh$" . csh-mode) 
+				("\\.cdl$" . c++-mode) 
+				("Makefile" . makefile-mode) 
+				("\\.uc$" . asm-mode) 
+				("\\.html$" . html-helper-mode)
+				("\\.md$" . gfm-mode) )
+			  auto-mode-alist))
+(or (assoc "\\.cgi$" auto-mode-alist)
+    (setq auto-mode-alist (append  auto-mode-alist '(("\\.cgi$" . perl-mode)))))
+(or (assoc "\\.scr$" auto-mode-alist)
+    (setq auto-mode-alist (append  auto-mode-alist '(("\\.cgi$" . perl-mode)))))
+(or (assoc "\\.pm$" auto-mode-alist)
+    (setq auto-mode-alist (append  auto-mode-alist '(("\\.pm$" . perl-mode)))))
+(or (assoc "\\.pl$" auto-mode-alist)
+    (setq auto-mode-alist (append  auto-mode-alist '(("\\.pl$" . perl-mode)))))
+(or (assoc "\\.v$" auto-mode-alist)
+    (setq auto-mode-alist (append  auto-mode-alist '(("\\.v$" . gjs-verilog-mode)))))
+
+(put 'narrow-to-region 'disabled nil)
+(put 'set-goal-column 'disabled nil)
+
+(setq font-lock-auto-fontify t)
+(turn-on-font-lock)
+(global-font-lock-mode t)
+(setq font-lock-maximum-decoration t)
+
+(setq
+ asm-mode-hook                   'asm-mode-hook-fn
+ css-mode-hook             'css-mode-hook-fn
+ csv-mode-hook                   'csv-mode-hook-fn
+ c-mode-hook                     'c-mode-hook-fn
+ javascript-mode-hook                  'rust-mode-hook-fn
+ js-mode-hook                  'rust-mode-hook-fn
+ rust-mode-hook                  'rust-mode-hook-fn
+ objc-mode-hook                  'objc-mode-hook-fn
+ c++-mode-hook                   'c-mode-hook-fn
+ schem-mode-hook                 'schem-mode-hook-fn
+ tex-mode-hook                   'tex-mode-hook-fn
+ tcl-mode-hook                   'shell-style-mode-hook-fn
+ perl-mode-hook                   'shell-style-mode-hook-fn
+ python-mode-hook                   'python-style-mode-hook-fn
+ nxml-mode-hook                   'nxml-mode-hook-fn
+ php-mode-hook                   'php-mode-hook-fn
+ makefile-mode-hook                   'shell-style-mode-hook-fn
+ sh-mode-hook                   'shell-style-mode-hook-fn
+ text-mode-hook 'turn-on-auto-fill
+ emacs-lisp-mode-hook            'emacs-lisp-mode-hook-fn
+ markdown-mode-hook                   'markdown-mode-hook-fn
+ tuareg-mode-hook                   'tuareg-mode-hook-fn
+ merlin-mode-hook                   'merlin-mode-hook-fn
+ )
+(add-hook 'caml-mode-hook   'merlin-mode t)
+(setq next-line-add-newlines nil)
+(global-set-key "\C-x\C-r" 'query-replace)
+(global-set-key "\C-x\C-l" 'goto-line)
+(global-set-key [?\C-x down] 'lower-frame)
+
+(put 'eval-expression 'disabled nil)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(c-basic-offset 4)
+ '(c-default-style
+   (quote
+    ((c-mode . "k&r")
+     (c++-mode . "k&r")
+     (java-mode . "java")
+     (other . "gnu"))))
+ '(completion-ignored-extensions
+   (quote
+    (".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof" ".glo" ".idx" ".lot" ".svn/" ".bzr/" "CVS/" "_darcs/" "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
+ '(display-time-mode t)
+ '(indent-tabs-mode nil)
+ '(nxml-heading-element-name-regexp "title\\|head\\|term\\|para")
+ '(nxml-section-element-name-regexp
+   "article\\|\\(sub\\)*section\\|chapter\\|div\\|appendix\\|part\\|preface\\|reference\\|simplesect\\|bibliography\\|bibliodiv\\|glossary\\|glossdiv\\|procedure\\|varlistentry\\|step\\|listitem\\|table")
+ '(package-selected-packages (quote (rust-mode)))
+ '(printer-name "uiport1")
+ '(rng-schema-locating-files
+   (quote
+    ("schemas.xml" "~/environment/emacs-lisp/schemas.xml" "/Applications/Emacs.app/Contents/Resources/etc/schema/schemas.xml")))
+ '(tab-stop-list
+   (quote
+    (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)))
+ '(tool-bar-mode nil)
+ '(vhdl-basic-offset 4)
+ '(vhdl-indent-tabs-mode nil))
+
+
+(put 'downcase-region 'disabled nil)
+
+
+(defvar rng-nxml-easy-menu
+  '("XML"
+    ["Show Outline Only" nxml-hide-all-text-content]
+    ["Show Everything" nxml-show-all]
+    "---"
+    ["Validation" rng-validate-mode
+     :style toggle
+     :selected rng-validate-mode]
+    "---"
+    ("Set Schema"
+     ["Automatically" rng-auto-set-schema]
+     ("For Document Type"
+      :filter (lambda (menu)
+                (mapcar (lambda (type-id)
+                          (vector type-id
+                                  (list 'rng-set-document-type
+                                        type-id)))
+                        (rng-possible-type-ids))))
+     ["Any Well-Formed XML" rng-set-vacuous-schema]
+     ["File..." rng-set-schema-file])
+    ["Show Schema Location" rng-what-schema]
+    ["Save Schema Location" rng-save-schema-location :help
+     "Save the location of the schema currently being used for this buffer"]
+    "---"
+    ["First Error" rng-first-error :active rng-validate-mode]
+    ["Next Error" rng-next-error :active rng-validate-mode]
+    "---"
+    ["Customize nXML" (customize-group 'nxml)]))
+(defun rng-nxml-mode-init ()
+  "Initialize `nxml-mode' to take advantage of `rng-validate-mode'.
+This is typically called from `nxml-mode-hook'.
+Validation will be enabled if `rng-nxml-auto-validate-flag' is non-nil."
+  (interactive)
+  (define-key nxml-mode-map "\C-c\C-v" 'rng-validate-mode)
+  (define-key nxml-mode-map "\C-c\C-e" 'rng-first-error)
+  (define-key nxml-mode-map "\C-c\C-n" 'rng-next-error)
+  (easy-menu-define rng-nxml-menu nxml-mode-map
+    "Menu for nxml-mode used with rng-validate-mode."
+    rng-nxml-easy-menu)
+  (add-to-list 'mode-line-process
+               '(rng-validate-mode (:eval (rng-compute-mode-line-string)))
+               'append)
+  (cond (t
+         (rng-validate-mode 1)
+         (add-hook 'nxml-completion-hook 'rng-complete nil t)
+         (add-hook 'nxml-in-mixed-content-hook 'rng-in-mixed-content-p nil t))))
+
+
+;;; hw-desc.el --- major mode for editing HW description files
+
+;; Copyright (C) 2009,  Netronome Systems, Inc.
+
+;; Author: Espen Skoglund <espen.skoglund@netronome.com>
+
+;; This file is not part of GNU Emacs.
+
+;; This library is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU Lesser General Public
+;; License as published by the Free Software Foundation; either
+;; version 2.1 of the License, or (at your option) any later version.
+
+;; This library is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; Lesser General Public License for more details.
+
+;; You should have received a copy of the GNU Lesser General Public
+;; License along with this library; if not, write to the Free Software
+;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+;; 02111-1307  USA
+
+;;; Commentary:
+
+;; This package provides an Emacs major mode for editing HW
+;; description files.  To use the package, place this file somewhere
+;; in your load-path and add the following line to your .emacs file.
+;;
+;;    (require 'hw-desc)
+
+;;; Code:
+
+(defgroup hw-desc nil
+  "Major mode for editing HW descriptions in Emacs"
+  :group 'languages)
+
+(defvar hw-desc-mode-abbrev-table nil
+  "Abbrev table in use in hw-desc mode buffers.")
+(define-abbrev-table 'hw-desc-mode-abbrev-table ())
+
+(defvar hw-desc-mode-map ()
+  "Keymap used in hw-desc mode.")
+(if hw-desc-mode-map
+    ()
+  (setq hw-desc-mode-map (make-sparse-keymap))
+  (define-key hw-desc-mode-map "*" 'hw-desc-electric-key)
+  (define-key hw-desc-mode-map ":" 'hw-desc-electric-key)
+  (define-key hw-desc-mode-map "{" 'hw-desc-electric-key)
+  (define-key hw-desc-mode-map "}" 'hw-desc-electric-key)
+  (define-key hw-desc-mode-map "\t" 'hw-desc-indent-command))
+
+(defvar hw-desc-mode-syntax-table nil
+  "Syntax table in use in hw-desc-mode buffers.")
+(if hw-desc-mode-syntax-table
+    ()
+  (setq hw-desc-mode-syntax-table (make-syntax-table))
+  (modify-syntax-entry ?#  "<.b" hw-desc-mode-syntax-table)
+  (modify-syntax-entry ?\n "> b" hw-desc-mode-syntax-table)
+  (modify-syntax-entry ?_ "w" hw-desc-mode-syntax-table))
+
+
+(defconst hw-desc-font-lock-keywords
+  (purecopy
+   (list
+    '("^[ \t]*\\([a-zA-Z_]+\\)" 1 font-lock-keyword-face)
+    '("{[ \t]*\\([a-zA-Z_]+\\)" 1 font-lock-keyword-face)
+    '("name[ \t]*[:=][ \t]\\(.+\\)" 1 font-lock-function-name-face)
+    '("type[ \t]*[:=][ \t]\\(.+\\)" 1 font-lock-type-face)
+    '("short[ \t]*[:=][ \t]\\(.+\\)" 1 font-lock-variable-name-face)))
+   "Additional expression to highlight in hw-desc mode.")
+(put 'hw-desc-mode 'font-lock-defaults
+     '(hw-desc-font-lock-keywords nil t))
+
+(defcustom hw-desc-indent-level 4
+  "*Indentation of hw-desc statements with respect to containing block."
+  :type 'integer
+  :group 'hw-desc)
+
+(defun hw-desc-mode ()
+  "Major mode for editing HW description files"
+  (interactive)
+  (kill-all-local-variables)
+  (use-local-map hw-desc-mode-map)
+  (setq major-mode 'hw-desc-mode)
+  (setq mode-name "hw-desc")
+  (setq local-abbrev-table hw-desc-mode-abbrev-table)
+  (set-syntax-table hw-desc-mode-syntax-table)
+  (make-local-variable 'indent-line-function)
+  (setq indent-line-function 'hw-desc-indent-line)
+  (make-local-variable 'parse-sexp-ignore-comments)
+  (setq parse-sexp-ignore-comments nil)
+  (make-local-variable 'comment-start)
+  (setq comment-start "#")
+  (make-local-variable 'comment-start-skip)
+  (setq comment-start-skip "#+ *")
+  (make-local-variable 'comment-end)
+  (setq comment-end "")
+  (make-local-variable 'font-lock-defaults)
+  (setq font-lock-defaults '(hw-desc-font-lock-keywords nil t))
+  (setq indent-tabs-mode nil)
+  (setq tab-width hw-desc-indent-level)
+  (run-hooks 'hw-desc-mode-hook))
+
+(defun hw-desc-electric-key ()
+  "Insert current command key and indent line."
+  (interactive)
+  (insert last-command-char)
+  (save-excursion
+    (beginning-of-line)
+    (hw-desc-indent-line)))
+
+(defun hw-desc-indent-command ()
+  "Indent current line as hw-desc code and/or insert whitespace."
+  (interactive)
+  (if (save-excursion
+	(skip-chars-backward " \t")
+	(bolp))
+      (hw-desc-indent-line)
+    (tab-to-tab-stop)))
+
+(defun hw-desc-indent-line ()
+  "Indent current line as a hw-desc statement."
+  (let* ((startpos (point))
+	 (state (parse-partial-sexp (point-min) (point)))
+	 (strcol (and (nth 3 state)
+		      (progn
+			(goto-char (nth 8 state))
+			(forward-char)
+			(skip-chars-forward " \t")
+			(current-column))))
+	 (paropen (and (nth 1 state)
+		       (progn
+			 (goto-char (nth 1 state))
+			 (looking-at "{[ \t]*$"))))
+	 (parcol (and (not paropen)
+		      (nth 1 state)
+		      (progn
+			(goto-char (nth 1 state))
+			(forward-char 1)
+			(skip-chars-forward " \t")
+			(current-column))))
+	 (startcol (and (nth 1 state)
+			(progn 
+			  (goto-char (nth 1 state))
+			  (beginning-of-line)
+			  (skip-chars-forward " \t")
+			  (current-column)))))
+    (goto-char startpos)
+    (delete-horizontal-space)
+    (indent-to (cond (strcol strcol)
+		     ((= (char-after) ?})
+		      (or startcol 0))
+		     (parcol parcol)
+		     (startcol (+ startcol hw-desc-indent-level))
+		     (t 0)))))
+			 
+;; Automatically enable hw-desc-mode for .desc files.
+(or (assoc "\\.desc$" auto-mode-alist)
+    (add-to-list 'auto-mode-alist '("\\.desc$" . hw-desc-mode)))
+
+(provide 'hw-desc)
+
+;;; hw-desc.el ends here
+
+;;; column-marker.el --- Highlight certain character columns
+;; 
+;; Filename: column-marker.el
+;; Description: Highlight certain character columns
+;; Author: Rick Bielawski <rbielaws@i1.net>
+;; Maintainer: Rick Bielawski <rbielaws@i1.net>
+;; Created: Tue Nov 22 10:26:03 2005
+;; Version: 9
+;; Last-Updated: Fri Jan 22 11:28:48 2010 (-0800)
+;;           By: dradams
+;;     Update #: 312
+;; Keywords: tools convenience highlight
+;; Compatibility: GNU Emacs 21, GNU Emacs 22, GNU Emacs 23
+;; 
+;; Features that might be required by this library:
+;;
+;;   None
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;;; Commentary: 
+;; 
+;; Highlights the background at a given character column.
+;; 
+;; Commands `column-marker-1', `column-marker-2', and
+;; `column-marker-3' each highlight a given column (using different
+;; background colors, by default).
+;;
+;; - With no prefix argument, each highlights the current column
+;;   (where the cursor is).
+;;
+;; - With a non-negative numeric prefix argument, each highlights that
+;;   column.
+;;
+;; - With plain `C-u' (no number), each turns off its highlighting.
+;;
+;; - With `C-u C-u', each turns off all column highlighting.
+;;
+;; If two commands highlight the same column, the last-issued
+;; highlighting command shadows the other - only the last-issued
+;; highlighting is seen.  If that "topmost" highlighting is then
+;; turned off, the other highlighting for that column then shows
+;; through.
+;;
+;; Examples:
+;;
+;; M-x column-marker-1 highlights the column where the cursor is, in
+;; face `column-marker-1'.
+;;
+;; C-u 70 M-x column-marker-2 highlights column 70 in face
+;; `column-marker-2'.
+;;
+;; C-u 70 M-x column-marker-3 highlights column 70 in face
+;; `column-marker-3'.  The face `column-marker-2' highlighting no
+;; longer shows.
+;;
+;; C-u M-x column-marker-3 turns off highlighting for column-marker-3,
+;; so face `column-marker-2' highlighting shows again for column 70.
+;;
+;; C-u C-u M-x column-marker-1 (or -2 or -3) erases all column
+;; highlighting.
+;;
+;; These commands use `font-lock-fontify-buffer', so syntax
+;; highlighting (`font-lock-mode') must be turned on.  There might be
+;; a performance impact during refontification.
+;;
+;;
+;; Installation: Place this file on your load path, and put this in
+;; your init file (`.emacs'):
+;;
+;; (require 'column-marker)
+;;
+;; Other init file suggestions (examples):
+;;
+;; ;; Highlight column 80 in foo mode.
+;; (add-hook 'foo-mode-hook (lambda () (interactive) (column-marker-1 80)))
+;;
+;; ;; Use `C-c m' interactively to highlight with face `column-marker-1'.
+;; (global-set-key [?\C-c ?m] 'column-marker-1)
+;;
+;;
+;; Please report any bugs!
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;;; Change log:
+;;
+;; 2009/12/10 dadams
+;;     column-marker-internal: Quote the face.  Thx to Johan Bockgård.
+;; 2009/12/09 dadams
+;;     column-marker-find: fset a symbol to the function, and return the symbol.
+;; 2008/01/21 dadams
+;;     Renamed faces by dropping suffix "-face".
+;; 2006/08/18 dadams
+;;     column-marker-create: Add newlines to doc-string sentences.
+;; 2005/12/31 dadams
+;;     column-marker-create: Add marker to column-marker-vars inside the defun,
+;;       so it is done in the right buffer, updating column-marker-vars buffer-locally.
+;;     column-marker-find: Corrected comment.  Changed or to progn for clarity.
+;; 2005/12/29 dadams
+;;     Updated wrt new version of column-marker.el (multi-column characters).
+;;     Corrected stray occurrences of column-marker-here to column-marker-1.
+;;     column-marker-vars: Added make-local-variable.
+;;     column-marker-create: Changed positive to non-negative.
+;;     column-marker-internal: Turn off marker when col is negative, not < 1.
+;; 2005-12-29 RGB
+;;     column-marker.el now supports multi-column characters.
+;; 2005/11/21 dadams
+;;     Combined static and dynamic. 
+;;     Use separate faces for each marker.  Different interactive spec.
+;; 2005/10/19 RGB
+;;     Initial release of column-marker.el.
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+;; Floor, Boston, MA 02110-1301, USA.
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;;; Code:
+
+;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defface column-marker-1 '((t (:background "gray")))
+  "Face used for a column marker.  Usually a background color."
+  :group 'faces)
+
+(defvar column-marker-1-face 'column-marker-1
+    "Face used for a column marker.  Usually a background color.
+Changing this directly affects only new markers.")
+
+(defface column-marker-2 '((t (:background "cyan3")))
+  "Face used for a column marker.  Usually a background color."
+  :group 'faces)
+
+(defvar column-marker-2-face 'column-marker-2
+    "Face used for a column marker.  Usually a background color.
+Changing this directly affects only new markers." )
+
+(defface column-marker-3 '((t (:background "orchid3")))
+  "Face used for a column marker.  Usually a background color."
+  :group 'faces)
+
+(defvar column-marker-3-face 'column-marker-3
+    "Face used for a column marker.  Usually a background color.
+Changing this directly affects only new markers." )
+
+(defvar column-marker-vars ()
+  "List of all internal column-marker variables")
+(make-variable-buffer-local 'column-marker-vars) ; Buffer local in all buffers.
+
+(defmacro column-marker-create (var &optional face)
+  "Define a column marker named VAR.
+FACE is the face to use.  If nil, then face `column-marker-1' is used."
+  (setq face (or face 'column-marker-1))
+  `(progn
+     ;; define context variable ,VAR so marker can be removed if desired
+     (defvar ,var ()
+       "Buffer local. Used internally to store column marker spec.")
+     ;; context must be buffer local since font-lock is 
+     (make-variable-buffer-local ',var)
+     ;; Define wrapper function named ,VAR to call `column-marker-internal'
+     (defun ,var (arg)
+       ,(concat "Highlight column with face `" (symbol-name face)
+                "'.\nWith no prefix argument, highlight current column.\n"
+                "With non-negative numeric prefix arg, highlight that column number.\n"
+                "With plain `C-u' (no number), turn off this column marker.\n"
+                "With `C-u C-u' or negative prefix arg, turn off all column-marker highlighting.")
+       (interactive "P")
+       (unless (memq ',var column-marker-vars) (push ',var column-marker-vars))
+       (cond ((null arg)          ; Default: highlight current column.
+              (column-marker-internal ',var (1+ (current-column)) ,face))
+             ((consp arg)
+              (if (= 4 (car arg))
+                  (column-marker-internal ',var nil) ; `C-u': Remove this column highlighting.
+                (dolist (var column-marker-vars)
+                  (column-marker-internal var nil)))) ; `C-u C-u': Remove all column highlighting.
+             ((and (integerp arg) (>= arg 0)) ; `C-u 70': Highlight that column.
+              (column-marker-internal ',var (1+ (prefix-numeric-value arg)) ,face))
+             (t           ; `C-u -40': Remove all column highlighting.
+              (dolist (var column-marker-vars)
+                (column-marker-internal var nil)))))))
+
+(defun column-marker-find (col)
+  "Defines a function to locate a character in column COL.
+Returns the function symbol, named `column-marker-move-to-COL'."
+  (let ((fn-symb  (intern (format "column-marker-move-to-%d" col))))
+    (fset `,fn-symb
+          `(lambda (end)
+             (let ((start (point)))
+               (when (> end (point-max)) (setq end (point-max)))
+
+               ;; Try to keep `move-to-column' from going backward, though it still can.
+               (unless (< (current-column) ,col) (forward-line 1))
+
+               ;; Again, don't go backward.  Try to move to correct column.
+               (when (< (current-column) ,col) (move-to-column ,col))
+
+               ;; If not at target column, try to move to it.
+               (while (and (< (current-column) ,col) (< (point) end)
+                           (= 0 (+ (forward-line 1) (current-column)))) ; Should be bol.
+                 (move-to-column ,col))
+
+               ;; If at target column, not past end, and not prior to start,
+               ;; then set match data and return t.  Otherwise go to start
+               ;; and return nil.
+               (if (and (= ,col (current-column)) (<= (point) end) (> (point) start))
+                   (progn (set-match-data (list (1- (point)) (point)))
+                          t)            ; Return t.
+                 (goto-char start)
+                 nil))))                ; Return nil.
+    fn-symb))
+
+(defun column-marker-internal (sym col &optional face)
+  "SYM is the symbol for holding the column marker context.
+COL is the column in which a marker should be set.
+Supplying nil or 0 for COL turns off the marker.
+FACE is the face to use.  If nil, then face `column-marker-1' is used."
+  (setq face (or face 'column-marker-1))
+  (when (symbol-value sym)   ; Remove any previously set column marker
+    (font-lock-remove-keywords nil (symbol-value sym))
+    (set sym nil))
+  (when (or (listp col) (< col 0)) (setq col nil)) ; Allow nonsense stuff to turn off the marker
+  (when col                             ; Generate a new column marker
+    (set sym `((,(column-marker-find col) (0 ',face prepend t))))
+    (font-lock-add-keywords nil (symbol-value sym) t))
+  (font-lock-fontify-buffer))
+
+;; If you need more markers you can create your own similarly.
+;; All markers can be in use at once, and each is buffer-local,
+;; so there is no good reason to define more unless you need more
+;; markers in a single buffer.
+(column-marker-create column-marker-1 column-marker-1-face)
+(column-marker-create column-marker-2 column-marker-2-face)
+(column-marker-create column-marker-3 column-marker-3-face)
+
+;;;###autoload
+(autoload 'column-marker-1 "column-marker" "Highlight a column." t)
+(defun column-marker-1-to-80 (&optional prefix-arg)
+  "Force column marker 1 to column 80"
+  (interactive "*P")
+  (column-marker-1 72)
+)
+;;;;;;;;;;;;;;;;;;
+
+(provide 'column-marker)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; column-marker.el ends here
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

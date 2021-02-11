@@ -1,0 +1,39 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+
+PATH=~/bin:$PATH
+PATH=/usr/local/cuda/bin:$PATH
+PATH=/Users/gavinprivate/Git/brew/bin/:/Users/gavinprivate/.opam/system/bin/:$PATH
+
+# PATH="/Users/gavinprivate/Git/brew/opt/openjdk@11/bin:$PATH"
+# CPPFLAGS="-I/Users/gavinprivate/Git/brew/opt/openjdk@11/include"
+
+export PATH
+
+export GHC_DOT_APP="/Applications/ghc-7.8.4.app"
+if [ -d "$GHC_DOT_APP" ]; then
+    PATH="${HOME}/.cabal/bin:${GHC_DOT_APP}/Contents/bin:${PATH}"
+fi
+
+# export CYCLICITY_ROOT=/Users/gavin/Desktop/Development/Mercurial/cyclicity-cdl.hg
+
+export ATCF_CDL_TOOLS_PATH=/Users/gavinprivate/Git/cdl_tools_grip
+
+export PYTHONPATH
+
+export HISTIGNORE="&:ls:[bf]g:history:ll:exit"
+export OPAMKEEPBUILDDIR=true
+export OCAMLPARAM="_,bin-annot=1"
+export OCAML_TOPLEVEL_PATH="/Users/gavinprivate/.opam/system/lib/toplevel"
+
+#. /tools/modules/init/bash
+#module load mercurial
+
+
+export PATH="$PATH:/Users/gavinprivate/miniconda3/bin"
+
+export PATH="$HOME/.cargo/bin:$PATH"
