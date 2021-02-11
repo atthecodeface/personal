@@ -1,5 +1,13 @@
+alias fix='reset; stty sane; tput rs1; clear; echo -e "\033c"'
 alias                 ll="ls -slagtr "
 alias              clean="rm -f *~"
+alias              gitl="git --graph --boundary --oneline "
+alias            gtkwave="/Applications/gtkwave.app/Contents/MacOS/gtkwave --dump "
+alias opam_setup='eval `opam config env`'
+
+# Start the Jenkins service: brew services start jenkins-lts
+# Restart the Jenkins service: brew services restart jenkins-lts
+# Update the Jenkins version: brew upgrade jenkins-lts
 
 function cless () { script -q /dev/null --command "$*" < /dev/null 2>&1 | less -R ;}
 if [ `uname` == "Darwin" ]

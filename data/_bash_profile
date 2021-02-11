@@ -33,3 +33,11 @@ export HISTIGNORE="&:ls:[bf]g:history:ll:exit"
 
 # OPAM configuration
 . ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+# eval `opam config env`
+# source "$HOME/.bash_iterm2"
+
+# export LDFLAGS="-L/Users/gstark/Git/brew/opt/readline/lib"
+# export CPPFLAGS="-I/Users/gstark/Git/brew/opt/readline/include"
+# export PKG_CONFIG_PATH="/Users/gstark/Git/brew/opt/readline/lib/pkgconfig"
+
+# export PATH="/Users/gstark/Git/rfpc-sw/install-rust/cargo/bin:$PATH"

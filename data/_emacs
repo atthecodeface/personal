@@ -41,6 +41,71 @@
 		)
   )
 
+(defun set-window-width (n)
+  "Set the selected window's width."
+  (adjust-window-trailing-edge (selected-window) (- n (window-width)) t))
+
+(defun tile-buffer-split (&optional n border)
+  ""
+  (progn
+    (setq n (or n 80))
+    (setq border (or border 2))
+    (setq spare (- (window-width) n))
+    (setq required (+ n border))
+    ;(insert (number-to-string spare))
+    ;(insert " ")
+    ;(insert (number-to-string border))
+    ;(insert ":")
+    (cond ( (>= spare required) (progn (setq new_window (split-window-right n))
+                                       (set-window-width n)
+                                       (select-window new_window)
+                                       (setq border (- spare (window-width)))
+                                       (tile-buffer-split n border))
+            ))
+  ))
+
+(defun tile-buffers (&optional n)
+  "Tile buffers horizontally to n columns."
+  (interactive "P")
+  (setq n (or n 120))
+  (setq current_window (selected-window))
+  (delete-other-windows nil)
+  (tile-buffer-split n)
+  (select-window current_window)
+)
+
+(defun switch-to-next-buffer-in-window (&optional n)
+  "Selects same buffer as in current window +n"
+  (interactive "P")
+  (setq n (or n 1))
+  (setq current_window (selected-window))
+  (setq other_window   (selected-window))
+  (while (> n 0)
+    (setq other_window   (next-window current_window 0))
+    (setq n (- n 1))
+    )
+  (while (< n 0)
+    (setq other_window   (previous-window current_window 0))
+    (setq n (+ n 1))
+    )
+  (select-window current_window)
+  (switch-to-buffer (window-buffer other_window))
+)
+
+(defun switch-to-prev-buffer-in-window (&optional n)
+  "Selects same buffer as in current window +n"
+  (interactive "P")
+  (setq n (or n 1))
+  (switch-to-next-buffer-in-window (- 0 n))
+)
+
+(defun prev-window (&optional n)
+  "Selects previous window (like other-window, but backwards)"
+  (interactive "P")
+  (setq n (or n 1))
+  (other-window (- 0 n))
+)
+
 (defun convert-xml-to-words (&optional fred)
   "Convert XML to word list"
   (interactive "*P")
@@ -125,22 +190,11 @@
 ; (setq merlin-command "~/.opam/system/bin/ocamlmerlin")
 (setq merlin-logfile "~/merlin_logfile")
 
-(load "markdown-mode")
-;(defun enter-outlining (regexp)
-;  (local-set-key "\C-c\C-a" 'outline-show-children)
-;  (local-set-key "\C-c\C-s" 'outline-show-subtree)
-;  (local-set-key "\C-c\C-d" 'outline-show-entry)
-;  (local-set-key "\C-c\C-h" 'outline-hide-subtree)
-;  (local-set-key "\C-c\C-n" 'outline-next-visible-heading)
-;  (local-set-key "\C-c\C-p" 'outline-previous-visible-heading)
-;  (local-set-key "\C-c\C-u" 'outline-up-heading)
-;  (setq outline-regexp regexp)
-;  (setq outline-heading-end-regexp "\n")
-;  (setq outline-level 'outline-level)
-;  (outline-minor-mode 1)
-;  (show-all)
-;  (hide-body)
-;  )
+(if (version< emacs-version "24.4")
+    (message "is before 24.4")
+  (load "markdown-mode")
+)
+
 (defun enter-outlining (regexp)
   (local-set-key "\C-c\C-a" 'show-children)
   (local-set-key "\C-c\C-s" 'show-subtree)
@@ -157,6 +211,10 @@
   (hide-body)
   )
 
+(defun text-mode-hook-fn   ()
+  ;(turn-on-auto-fill)
+  (local-set-key "\011" 'intelligent-tab)
+  )
 (defun markdown-mode-hook-fn   ()
   (local-set-key "\011" 'intelligent-tab)
   (enter-outlining "#+")
@@ -284,6 +342,15 @@
   (auto-fill-mode 1)
   (hide-body)
   )
+
+(defun gfm-mode-hook-fn   ()
+  (local-set-key "\011" 'intelligent-tab)
+  (local-set-key "\M-f" 'fill-region-as-paragraph)
+  (enter-outlining "#+" )
+  (auto-fill-mode 1)
+  (hide-body)
+  )
+
 (defun emacs-lisp-mode-hook-fn   ()
   (local-set-key "\C-c\C-r" 'eval-region)
   )
@@ -323,6 +390,8 @@
 				("Makefile" . makefile-mode) 
 				("\\.uc$" . asm-mode) 
 				("\\.html$" . html-helper-mode)
+				("\\.txt$" . text-mode)
+				("\\.dot$" . text-mode)
 				("\\.md$" . gfm-mode) )
 			  auto-mode-alist))
 (or (assoc "\\.cgi$" auto-mode-alist)
@@ -363,7 +432,7 @@
  php-mode-hook                   'php-mode-hook-fn
  makefile-mode-hook                   'shell-style-mode-hook-fn
  sh-mode-hook                   'shell-style-mode-hook-fn
- text-mode-hook 'turn-on-auto-fill
+ text-mode-hook 'text-mode-hook-fn
  emacs-lisp-mode-hook            'emacs-lisp-mode-hook-fn
  markdown-mode-hook                   'markdown-mode-hook-fn
  tuareg-mode-hook                   'tuareg-mode-hook-fn
@@ -373,6 +442,10 @@
 (setq next-line-add-newlines nil)
 (global-set-key "\C-x\C-r" 'query-replace)
 (global-set-key "\C-x\C-l" 'goto-line)
+(global-set-key "\C-xp" 'prev-window)
+(global-set-key "\C-x~" 'tile-buffers)
+(global-set-key "\C-x>" 'switch-to-next-buffer-in-window)
+(global-set-key "\C-x<" 'switch-to-prev-buffer-in-window)
 (global-set-key [?\C-x down] 'lower-frame)
 
 (put 'eval-expression 'disabled nil)
@@ -887,6 +960,7 @@ FACE is the face to use.  If nil, then face `column-marker-1' is used."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; column-marker.el ends here
 
+(put 'upcase-region 'disabled nil)
 (custom-set-faces
  )
 (if (eq system-type 'darwin)
