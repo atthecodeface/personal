@@ -1,0 +1,26 @@
+# export JAVA_HOME=/usr
+
+alias fix='reset; stty sane; tput rs1; clear; echo -e "\033c"'
+
+alias                 ll="ls -slagtr "
+alias              clean="rm -f *~"
+alias              gitl="git --graph --boundary --oneline "
+alias            gtkwave="/Applications/gtkwave.app/Contents/MacOS/gtkwave --dump "
+alias opam_setup='eval `opam config env`'
+
+# Start the Jenkins service: brew services start jenkins-lts
+# Restart the Jenkins service: brew services restart jenkins-lts
+# Update the Jenkins version: brew upgrade jenkins-lts
+
+# usage: hg_pull_from <dir>
+
+function hg_pull_from_internal () { echo "Pulling from ${DIRSTACK[1]} to ${DIRSTACK[2]}"; ( cd "${DIRSTACK[2]}"; find . -name '.hg' -print0 | xargs -0 -t -I "dirname" sh -c "cd dirname/.. ; if [ -d ${DIRSTACK[1]}/dirname ]; then hg pull ${DIRSTACK[1]}/dirname/..; fi;" ) ; }
+function hg_pull_from () { pushd $1 ; pushd . ; hg_pull_from_internal ; popd ; popd ; }
+
+alias profile="CPUPROFILE_FREQUENCY=10000 CPUPROFILE=./exec.prof DYLD_INSERT_LIBRARIES='/usr/local/lib/libtcmalloc_and_profiler.dylib' "
+
+alias           dvdclone="vobcopy -f -F 64 -v -v -m "
+
+alias   rsync_timemachine='rsync -a -e ssh /Volumes/Time\ Machine\ Backups/Backups.backupdb/GJS_MBP/Latest/Main gstark@ocarina:/backup/gavin/MacBookProMain'
+
+function cless () { script -q /dev/null $* < /dev/null 2>&1 | less -R ;}

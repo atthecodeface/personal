@@ -1,4 +1,4 @@
-DOT_FILES         = .bashrc .emacs .bash_profile
+DOT_FILES         = .bashrc .emacs .bash_profile .zshenv
 DOT_FILES_IN_DATA = $(patsubst .%,_%,$(DOT_FILES))
 OTHER_FILES       = emacs-lisp
 
@@ -21,6 +21,9 @@ help:
 	@echo "In the repo the files are ${DATA_FILES}"
 	@echo "In the home directory the files are ${HOME_FILES}"
 
+copy_to_home_zshenv:
+	rsync --archive --backup data/_zshenv ~/.zshenv
+
 copy_to_home_bashrc:
 	rsync --archive --backup data/_bashrc ~/.bashrc
 
@@ -30,11 +33,14 @@ copy_to_home_bash_profile:
 copy_to_home_emacs:
 	rsync --archive --backup data/_emacs ~/.emacs
 
-copy_to_home: copy_to_home_bash_profile copy_to_home_bashrc copy_to_home_emacs
-	rsync --archive --backup data/emacs-lisp ~
+copy_to_home: copy_to_home_bash_profile copy_to_home_bashrc copy_to_home_emacs copy_to_home_zshenv
+	rsync --archive --backup data/emacs-lisp data/zsh ~
 
 copy_to_git:
 	rsync --archive --backup ${HOME_FILES} data
+
+diff_zshenv:
+	($(DIFF) ~/.zshenv data/_zshenv ) || true
 
 diff_bashrc:
 	($(DIFF) ~/.bashrc data/_bashrc ) || true
@@ -44,7 +50,11 @@ diff_bash_profile:
 
 diff_emacs:
 	($(DIFF) ~/.emacs data/_emacs ) || true
+	($(DIFF) ~/emacs-lisp data/emacs-lisp ) || true
 
-diff: diff_bashrc diff_bash_profile diff_emacs
+diff_zsh:
+	($(DIFF) ~/zsh data/zsh ) || true
+
+diff: diff_zshenv diff_zsh diff_bashrc diff_bash_profile diff_emacs
 
 
