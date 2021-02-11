@@ -5,7 +5,12 @@ OTHER_FILES       = emacs-lisp
 DATA_FILES := $(patsubst %,data/%,$(OTHER_FILES) $(DOT_FILES_IN_DATA))
 HOME_FILES := $(patsubst %,~/%,$(OTHER_FILES) $(DOT_FILES))
 
-DIFF = diff -u --color=always
+UNAME = $(shell "uname")
+ifeq ($(UNAME),Darwin)
+DIFF := diff -u
+else
+DIFF := diff -u --color=always
+endif
 
 all: help
 
@@ -16,8 +21,17 @@ help:
 	@echo "In the repo the files are ${DATA_FILES}"
 	@echo "In the home directory the files are ${HOME_FILES}"
 
-copy_to_home:
-	rsync --archive --backup ${DATA_FILES} ~
+copy_to_home_bashrc:
+	rsync --archive --backup data/_bashrc ~/.bashrc
+
+copy_to_home_bash_profile:
+	rsync --archive --backup data/_bash_profile ~/.bash_profile
+
+copy_to_home_emacs:
+	rsync --archive --backup data/_emacs ~/.emacs
+
+copy_to_home: copy_to_home_bash_profile copy_to_home_bashrc copy_to_home_emacs
+	rsync --archive --backup data/emacs-lisp ~
 
 copy_to_git:
 	rsync --archive --backup ${HOME_FILES} data
