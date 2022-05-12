@@ -41,3 +41,4 @@ export HISTIGNORE="&:ls:[bf]g:history:ll:exit"
 # export PKG_CONFIG_PATH="/Users/gstark/Git/brew/opt/readline/lib/pkgconfig"
 
 # export PATH="/Users/gstark/Git/rfpc-sw/install-rust/cargo/bin:$PATH"
+. "$HOME/.cargo/env"

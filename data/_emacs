@@ -257,6 +257,13 @@
   (enter-outlining "\\s-*\\(/\\*\\|//\\)[a-z]+")
   (local-set-key "\C-C\C-M" 'column-marker-1-to-80 )
   )
+(defun verilog-mode-hook-fn ()
+  ; Make '_' not be part of a word
+  (modify-syntax-entry ?_ "_")
+  (local-set-key "\011" 'intelligent-tab)
+  (enter-outlining "\\s-*\\(/\\*\\|//\\)[a-z]+")
+)
+(char-to-string (char-syntax ?+))
 (defun objc-mode-hook-fn   ()
   (local-set-key "\011" 'intelligent-tab)
   (local-set-key "\C-C\C-c" 'compile)
@@ -355,17 +362,6 @@
   (local-set-key "\C-c\C-r" 'eval-region)
   )
 
-(defun gjs-verilog-mode ()
-  "This mode is used for editing Verilog files"
-  (setq major-mode 'verilog-mode)
-  (setq mode-name "Verilog")
-  (setq mode-line-process '(""))
-  (make-local-variable 'telnet-interrupt-string)
-  (setq telnet-interrupt-string "^C")
-  (local-set-key "\011" 'intelligent-tab)
-  (enter-outlining "//a\\|[	 ]*//[b-z][ 	]")
-)
-
 (setq default-tab-width 4)
 (setq calendar-latitude 53.0)
 (setq calendar-longitude 0.0)
@@ -392,6 +388,8 @@
 				("\\.html$" . html-helper-mode)
 				("\\.txt$" . text-mode)
 				("\\.dot$" . text-mode)
+				("\\.ehdl$" . rust-mode)
+				("\\.bazel$" . python-mode)
 				("\\.md$" . gfm-mode) )
 			  auto-mode-alist))
 (or (assoc "\\.cgi$" auto-mode-alist)
@@ -402,8 +400,6 @@
     (setq auto-mode-alist (append  auto-mode-alist '(("\\.pm$" . perl-mode)))))
 (or (assoc "\\.pl$" auto-mode-alist)
     (setq auto-mode-alist (append  auto-mode-alist '(("\\.pl$" . perl-mode)))))
-(or (assoc "\\.v$" auto-mode-alist)
-    (setq auto-mode-alist (append  auto-mode-alist '(("\\.v$" . gjs-verilog-mode)))))
 
 (put 'narrow-to-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
@@ -434,6 +430,7 @@
  sh-mode-hook                   'shell-style-mode-hook-fn
  text-mode-hook 'text-mode-hook-fn
  emacs-lisp-mode-hook            'emacs-lisp-mode-hook-fn
+ verilog-mode-hook            'verilog-mode-hook-fn
  markdown-mode-hook                   'markdown-mode-hook-fn
  tuareg-mode-hook                   'tuareg-mode-hook-fn
  merlin-mode-hook                   'merlin-mode-hook-fn
@@ -476,6 +473,7 @@
    (quote
     (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80)))
  '(tool-bar-mode nil)
+ '(verilog-indent-level 2)
  '(vhdl-basic-offset 4)
  '(vhdl-indent-tabs-mode nil))
 
@@ -962,7 +960,11 @@ FACE is the face to use.  If nil, then face `column-marker-1' is used."
 
 (put 'upcase-region 'disabled nil)
 (custom-set-faces
- )
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Ubuntu Mono" :foundry "DAMA" :slant normal :weight normal :height 98 :width normal)))))
 (if (eq system-type 'darwin)
   (custom-set-faces
    )
